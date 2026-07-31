@@ -5,6 +5,7 @@ apply plugin: 'idea'
 apply plugin: 'opensearch.opensearchplugin'
 apply plugin: 'opensearch.yaml-rest-test'
 apply plugin: 'opensearch.pluginzip'
+apply plugin: 'opensearch.java-agent'
 
 def pluginName = 'opensearch-api'
 def pluginDescription = 'OpenSearch API plugin.'
@@ -14,7 +15,7 @@ def pluginClassName = 'APIPlugin'
 
 buildscript {
     ext {
-        opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+        opensearch_version = System.getProperty("opensearch.version", "3.7.0")
         isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     }
 
@@ -40,6 +41,15 @@ allprojects {
     if (isSnapshot) {
         version += "-SNAPSHOT"
     }
+
+   configurations.all {
+       resolutionStrategy.eachDependency { details ->
+           if (details.requested.group == 'com.google.errorprone' && details.requested.name == 'error_prone_annotations') {
+               details.useVersion '2.45.0'
+               details.because 'force latest to resolve conflict'
+           }
+       }
+   }
 
     plugins.withId('java') {
         java.sourceCompatibility = JavaVersion.VERSION_21
