@@ -8,7 +8,7 @@
 
 package org.opensearch.plugin.api;
 
-import org.opensearch.client.node.NodeClient;
+import org.opensearch.transport.client.node.NodeClient;
 import org.opensearch.core.rest.RestStatus;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.plugin.api.action.api.APIAction;

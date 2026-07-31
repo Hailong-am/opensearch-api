@@ -9,7 +9,7 @@
 package org.opensearch.plugin.api.action.api;
 
 import org.opensearch.action.ActionRequestBuilder;
-import org.opensearch.client.OpenSearchClient;
+import org.opensearch.transport.client.OpenSearchClient;
 
 public class APIRequestBuilder extends ActionRequestBuilder<APIRequest, APIResponse> {
 
