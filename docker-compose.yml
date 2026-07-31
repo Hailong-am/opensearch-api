@@ -1,0 +1,25 @@
+# Usage:
+#   docker compose up -d
+#   curl http://localhost:9200/_plugins/api | python3 -m json.tool
+
+version: '3'
+services:
+  opensearch-api:
+    build:
+      context: .
+      args:
+        OS_VERSION: "3.7.0"
+    image: opensearch-api:3.7.0
+    container_name: opensearch-api
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Admin_1234!
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
