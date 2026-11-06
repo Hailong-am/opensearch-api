@@ -52,10 +52,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
+          url="https://github.com/$GITHUB_REPOSITORY/releases/download/v$VERSION/opensearch-api-$VERSION.0.zip"
+          cat > notes.md <<NOTES
+          OpenSearch API plugin built for OpenSearch $VERSION.
+
+          Install:
+          \`\`\`
+          ./bin/opensearch-plugin install $url
+          \`\`\`
+
+          The plugin exposes \`GET /_plugins/api\` returning the cluster's live REST route surface as an OpenAPI 3.0.1 document. Built with \`-Dopensearch.version=$VERSION -Dbuild.snapshot=false\` (JDK 21).
+          NOTES
           gh release create "v$VERSION" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "opensearch-api $VERSION" \
-            --notes "OpenSearch API plugin built for OpenSearch $VERSION." \
+            --notes-file notes.md \
             "build/distributions/opensearch-api-$VERSION.0.zip" \
             LICENSE.txt
