@@ -1,0 +1,39 @@
+---
+name: Check OpenSearch Release
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check for a new OpenSearch release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Release the latest OpenSearch version if missing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          metadata="https://repo1.maven.org/maven2/org/opensearch/gradle/build-tools/maven-metadata.xml"
+          latest=$(curl -fsSL "$metadata" \
+            | grep -oE '<version>[0-9]+\.[0-9]+\.[0-9]+</version>' \
+            | sed -E 's#</?version>##g' \
+            | sort -V | tail -n 1)
+          if [ -z "$latest" ]; then
+            echo "Could not determine the latest OpenSearch version" >&2
+            exit 1
+          fi
+          echo "Latest OpenSearch release: $latest"
+
+          if gh release view "v$latest" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release v$latest already exists"
+            exit 0
+          fi
+
+          echo "Publishing v$latest"
+          gh workflow run release.yml --repo "$GITHUB_REPOSITORY" --ref main -f opensearch_version="$latest"
