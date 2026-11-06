@@ -17,7 +17,7 @@ jobs:
           - macOS-latest
           - windows-latest
         java:
-          - 17
+          - 21
     name: Build and Test Plugin
     runs-on: ${{ matrix.os }}
 
